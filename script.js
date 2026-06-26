@@ -2,6 +2,7 @@
 
 let tasks = [];
 let currentFilter = 'all';
+let currentSort = 'default';
 
 // Load tasks from localStorage on page load
 document.addEventListener('DOMContentLoaded', () => {
@@ -38,6 +39,19 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
         btn.classList.add('active');
         // Update current filter
         currentFilter = btn.dataset.filter;
+        renderTasks();
+    });
+});
+
+// Sort button event listeners
+document.querySelectorAll('.sort-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        // Remove active class from all buttons
+        document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+        // Add active class to clicked button
+        btn.classList.add('active');
+        // Update current sort
+        currentSort = btn.dataset.sort;
         renderTasks();
     });
 });
@@ -105,14 +119,39 @@ function clearCompletedTasks() {
 }
 
 function getFilteredTasks() {
+    let filtered = tasks;
+    
+    // Apply filter
     switch (currentFilter) {
         case 'active':
-            return tasks.filter(task => !task.completed);
+            filtered = tasks.filter(task => !task.completed);
+            break;
         case 'completed':
-            return tasks.filter(task => task.completed);
+            filtered = tasks.filter(task => task.completed);
+            break;
         default:
-            return tasks;
+            filtered = tasks;
     }
+    
+    // Apply sort
+    switch (currentSort) {
+        case 'name':
+            filtered = [...filtered].sort((a, b) => a.text.localeCompare(b.text));
+            break;
+        case 'date':
+            filtered = [...filtered].sort((a, b) => {
+                if (!a.dueDate && !b.dueDate) return 0;
+                if (!a.dueDate) return 1;
+                if (!b.dueDate) return -1;
+                return new Date(a.dueDate) - new Date(b.dueDate);
+            });
+            break;
+        default:
+            // Keep original order (by creation date)
+            filtered = [...filtered].sort((a, b) => a.id - b.id);
+    }
+    
+    return filtered;
 }
 
 function renderTasks() {

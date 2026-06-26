@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1782457765114,
+    "text": "cook",
+    "completed": true,
+    "dueDate": "2026-06-30",
+    "createdAt": "2026-06-26T07:09:25.114Z"
+  },
+  {
+    "id": 1782457840946,
+    "text": "meow",
+    "completed": true,
+    "dueDate": null,
+    "createdAt": "2026-06-26T07:10:40.946Z"
+  },
+  {
+    "id": 1782459741681,
+    "text": "movie",
+    "completed": false,
+    "dueDate": null,
+    "createdAt": "2026-06-26T07:42:21.681Z"
+  },
+  {
+    "id": 1782459746584,
+    "text": "show",
+    "completed": false,
+    "dueDate": null,
+    "createdAt": "2026-06-26T07:42:26.584Z"
+  }
+]
