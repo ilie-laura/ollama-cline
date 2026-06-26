@@ -35,7 +35,9 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
 
 function addTask() {
     const taskInput = document.getElementById('taskInput');
+    const dueDateInput = document.getElementById('dueDateInput');
     const taskText = taskInput.value.trim();
+    const dueDate = dueDateInput.value;
     
     if (taskText === '') {
         alert('Please enter a task!');
@@ -46,11 +48,13 @@ function addTask() {
         id: Date.now(),
         text: taskText,
         completed: false,
+        dueDate: dueDate || null,
         createdAt: new Date().toISOString()
     };
     
     tasks.push(task);
     taskInput.value = '';
+    dueDateInput.value = '';
     saveTasks();
     renderTasks();
     updateTaskCount();
@@ -120,15 +124,23 @@ function renderTasks() {
         return;
     }
     
-    taskList.innerHTML = filteredTasks.map(task => `
-        <li class="task-item ${task.completed ? 'completed' : ''}" data-id="${task.id}">
-            <input type="checkbox" class="task-checkbox" 
-                   ${task.completed ? 'checked' : ''} 
-                   onchange="toggleTask(${task.id})">
-            <span class="task-text">${escapeHtml(task.text)}</span>
-            <button class="delete-btn" onclick="deleteTask(${task.id})">Delete</button>
-        </li>
-    `).join('');
+    taskList.innerHTML = filteredTasks.map(task => {
+        const isOverdue = task.dueDate && !task.completed && new Date(task.dueDate) < new Date().setHours(0, 0, 0, 0);
+        const dueDateDisplay = task.dueDate ? formatDate(task.dueDate) : '';
+        
+        return `
+            <li class="task-item ${task.completed ? 'completed' : ''} ${isOverdue ? 'overdue' : ''}" data-id="${task.id}">
+                <input type="checkbox" class="task-checkbox" 
+                       ${task.completed ? 'checked' : ''} 
+                       onchange="toggleTask(${task.id})">
+                <div class="task-content">
+                    <span class="task-text">${escapeHtml(task.text)}</span>
+                    ${dueDateDisplay ? `<span class="due-date ${isOverdue ? 'overdue-text' : ''}">📅 ${dueDateDisplay}</span>` : ''}
+                </div>
+                <button class="delete-btn" onclick="deleteTask(${task.id})">Delete</button>
+            </li>
+        `;
+    }).join('');
 }
 
 function updateTaskCount() {
@@ -159,6 +171,35 @@ function loadTasks() {
     if (savedTasks) {
         tasks = JSON.parse(savedTasks);
     }
+    // Check for overdue tasks and delete them
+    checkOverdueTasks();
+}
+
+function checkOverdueTasks() {
+    const today = new Date().setHours(0, 0, 0, 0);
+    const initialCount = tasks.length;
+    
+    tasks = tasks.filter(task => {
+        // Keep task if: no due date, completed, or due date is today or future
+        if (!task.dueDate || task.completed) {
+            return true;
+        }
+        const taskDueDate = new Date(task.dueDate).setHours(0, 0, 0, 0);
+        return taskDueDate >= today;
+    });
+    
+    // If any tasks were removed, save and update display
+    if (tasks.length !== initialCount) {
+        saveTasks();
+        renderTasks();
+        updateTaskCount();
+    }
+}
+
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    const options = { month: 'short', day: 'numeric', year: 'numeric' };
+    return date.toLocaleDateString('en-US', options);
 }
 
 function escapeHtml(text) {

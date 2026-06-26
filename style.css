@@ -34,15 +34,31 @@ h1 {
     display: flex;
     gap: 10px;
     margin-bottom: 20px;
+    flex-wrap: wrap;
 }
 
 #taskInput {
     flex: 1;
+    min-width: 200px;
     padding: 12px 15px;
     border: 2px solid #e0e0e0;
     border-radius: 8px;
     font-size: 16px;
     transition: border-color 0.3s;
+}
+
+#dueDateInput {
+    padding: 12px 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s;
+    cursor: pointer;
+}
+
+#dueDateInput:focus {
+    outline: none;
+    border-color: #667eea;
 }
 
 #taskInput:focus {
@@ -131,11 +147,20 @@ h1 {
     color: #999;
 }
 
-.task-checkbox {
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
-    accent-color: #667eea;
+.task-item.overdue {
+    border-left-color: #dc3545;
+    background: #fff5f5;
+}
+
+.task-item.overdue:hover {
+    background: #ffe5e5;
+}
+
+.task-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
 
 .task-text {
@@ -143,6 +168,26 @@ h1 {
     font-size: 16px;
     color: #333;
     word-break: break-word;
+}
+
+.due-date {
+    font-size: 12px;
+    color: #666;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.overdue-text {
+    color: #dc3545;
+    font-weight: 600;
+}
+
+.task-checkbox {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: #667eea;
 }
 
 .delete-btn {
