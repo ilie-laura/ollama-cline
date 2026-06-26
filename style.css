@@ -113,6 +113,114 @@ h1 {
     color: white;
 }
 
+.theme-toggle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: #f0f0f0;
+    cursor: pointer;
+    font-size: 20px;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.theme-toggle:hover {
+    background: #e0e0e0;
+    transform: rotate(180deg);
+}
+
+/* Dark Mode Styles */
+body.dark-mode {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+}
+
+body.dark-mode .container {
+    background: #1e1e1e;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+body.dark-mode h1 {
+    color: #e0e0e0;
+}
+
+body.dark-mode #taskInput,
+body.dark-mode #dueDateInput {
+    background: #2d2d2d;
+    border-color: #404040;
+    color: #e0e0e0;
+}
+
+body.dark-mode #taskInput::placeholder {
+    color: #888;
+}
+
+body.dark-mode #taskInput:focus,
+body.dark-mode #dueDateInput:focus {
+    border-color: #667eea;
+}
+
+body.dark-mode .filter-btn {
+    background: #2d2d2d;
+    color: #b0b0b0;
+}
+
+body.dark-mode .filter-btn:hover {
+    background: #3d3d3d;
+}
+
+body.dark-mode .task-item {
+    background: #2d2d2d;
+    border-left-color: #667eea;
+}
+
+body.dark-mode .task-item:hover {
+    background: #3d3d3d;
+}
+
+body.dark-mode .task-item.completed {
+    border-left-color: #28a745;
+}
+
+body.dark-mode .task-item.completed .task-text {
+    color: #888;
+}
+
+body.dark-mode .task-item.overdue {
+    background: #3d2d2d;
+    border-left-color: #dc3545;
+}
+
+body.dark-mode .task-item.overdue:hover {
+    background: #4d3d3d;
+}
+
+body.dark-mode .task-text {
+    color: #e0e0e0;
+}
+
+body.dark-mode .due-date {
+    color: #b0b0b0;
+}
+
+body.dark-mode .stats {
+    border-top-color: #404040;
+}
+
+body.dark-mode #taskCount {
+    color: #b0b0b0;
+}
+
+body.dark-mode .file-actions {
+    border-top-color: #404040;
+}
+
+body.dark-mode .empty-state {
+    color: #888;
+}
+
 #taskList {
     list-style: none;
     margin-bottom: 20px;
@@ -188,6 +296,22 @@ h1 {
     height: 20px;
     cursor: pointer;
     accent-color: #667eea;
+}
+
+.edit-btn {
+    background: #ffc107;
+    color: #333;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.edit-btn:hover {
+    background: #ffb300;
+    transform: scale(1.1);
 }
 
 .delete-btn {

@@ -8,7 +8,11 @@ document.addEventListener('DOMContentLoaded', () => {
     loadTasks();
     renderTasks();
     updateTaskCount();
+    loadTheme();
 });
+
+// Dark mode toggle
+document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
 
 // Add task event listeners
 document.getElementById('addTaskBtn').addEventListener('click', addTask);
@@ -142,6 +146,7 @@ function renderTasks() {
                     <span class="task-text">${escapeHtml(task.text)}</span>
                     ${dueDateDisplay ? `<span class="due-date ${isOverdue ? 'overdue-text' : ''}">📅 ${dueDateDisplay}</span>` : ''}
                 </div>
+                <button class="edit-btn" onclick="editTask(${task.id})">✏️</button>
                 <button class="delete-btn" onclick="deleteTask(${task.id})">Delete</button>
             </li>
         `;
@@ -211,6 +216,69 @@ function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+}
+
+function toggleDarkMode() {
+    const body = document.body;
+    const toggle = document.getElementById('darkModeToggle');
+    
+    body.classList.toggle('dark-mode');
+    const isDarkMode = body.classList.contains('dark-mode');
+    
+    toggle.textContent = isDarkMode ? '☀️' : '🌙';
+    
+    // Save preference to localStorage
+    localStorage.setItem('darkMode', isDarkMode ? 'enabled' : 'disabled');
+}
+
+function loadTheme() {
+    const darkMode = localStorage.getItem('darkMode');
+    const toggle = document.getElementById('darkModeToggle');
+    
+    if (darkMode === 'enabled') {
+        document.body.classList.add('dark-mode');
+        toggle.textContent = '☀️';
+    } else {
+        toggle.textContent = '🌙';
+    }
+}
+
+function editTask(id) {
+    const task = tasks.find(t => t.id === id);
+    if (!task) return;
+    
+    const newText = prompt('Edit task:', task.text);
+    if (newText === null) return; // User cancelled
+    
+    const trimmedText = newText.trim();
+    if (trimmedText === '') {
+        alert('Task text cannot be empty!');
+        return;
+    }
+    
+    const newDueDate = prompt('Edit due date (YYYY-MM-DD) or leave empty:', task.dueDate || '');
+    const dueDate = newDueDate ? newDueDate.trim() : null;
+    
+    // Validate date format if provided
+    if (dueDate && !/^\d{4}-\d{2}-\d{2}$/.test(dueDate)) {
+        alert('Invalid date format! Use YYYY-MM-DD');
+        return;
+    }
+    
+    tasks = tasks.map(t => {
+        if (t.id === id) {
+            return {
+                ...t,
+                text: trimmedText,
+                dueDate: dueDate
+            };
+        }
+        return t;
+    });
+    
+    saveTasks();
+    renderTasks();
+    updateTaskCount();
 }
 
 function exportTasks() {
