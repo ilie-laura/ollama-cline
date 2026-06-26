@@ -19,6 +19,11 @@ document.getElementById('taskInput').addEventListener('keypress', (e) => {
 });
 
 document.getElementById('clearCompleted').addEventListener('click', clearCompletedTasks);
+document.getElementById('exportBtn').addEventListener('click', exportTasks);
+document.getElementById('importBtn').addEventListener('click', () => {
+    document.getElementById('importFile').click();
+});
+document.getElementById('importFile').addEventListener('change', importTasks);
 
 // Filter button event listeners
 document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -206,4 +211,81 @@ function escapeHtml(text) {
     const div = document.createElement('div');
     div.textContent = text;
     return div.innerHTML;
+}
+
+function exportTasks() {
+    const dataStr = JSON.stringify(tasks, null, 2);
+    const dataBlob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(dataBlob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `tasks_${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
+    alert('Tasks exported successfully!');
+}
+
+function importTasks(event) {
+    const file = event.target.files[0];
+    if (!file) {
+        return;
+    }
+    
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+        try {
+            const importedTasks = JSON.parse(e.target.result);
+            
+            if (!Array.isArray(importedTasks)) {
+                alert('Invalid file format! Expected an array of tasks.');
+                return;
+            }
+            
+            // Validate task structure
+            const validTasks = importedTasks.filter(task => {
+                return task.id && task.text && typeof task.completed === 'boolean';
+            });
+            
+            if (validTasks.length === 0) {
+                alert('No valid tasks found in the file!');
+                return;
+            }
+            
+            // Merge with existing tasks (avoid duplicates by ID)
+            const existingIds = new Set(tasks.map(t => t.id));
+            const newTasks = validTasks.filter(t => !existingIds.has(t.id));
+            
+            if (newTasks.length === 0) {
+                alert('All tasks already exist in the current list!');
+                return;
+            }
+            
+            if (confirm(`Found ${newTasks.length} new task(s). Do you want to import them?`)) {
+                tasks = [...tasks, ...newTasks];
+                saveTasks();
+                renderTasks();
+                updateTaskCount();
+                alert(`Successfully imported ${newTasks.length} task(s)!`);
+            }
+            
+        } catch (error) {
+            alert('Error reading file! Please make sure it\'s a valid JSON file.');
+            console.error('Import error:', error);
+        }
+        
+        // Reset file input
+        event.target.value = '';
+    };
+    
+    reader.onerror = function() {
+        alert('Error reading file!');
+        event.target.value = '';
+    };
+    
+    reader.readAsText(file);
 }
